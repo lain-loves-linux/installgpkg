@@ -1,0 +1,86 @@
+#!/bin/bash
+if [ -d ~/.installgpkg ]; then
+	sleep 0.1
+else
+	echo "working directory not found!"
+	mkdir -p ~/.installgpkg/{bin,work,usr,delinfo}
+	echo 'export PATH="~/.installgpkg/bin:$PATH"' >> ~/.bashrc
+	echo 'export PATH="~/.installgpkg/usr/bin:$PATH"' >> ~/.bashrc
+	echo 'export PATH="~/.installgpkg/usr:$PATH"' >> ~/.bashrc
+	mv $0 ~/.installgpkg/bin
+	echo "created ~/.installgpkg & .bashrc modified; script moved to newly created PATH"
+	source ~/.bashrc
+fi
+
+install_func () {
+	cp $filename ~/.installgpkg/work # $filename = $2
+	cd ~/.installgpkg/work
+	tar xf $filename
+	dir_name=$(basename "$filename" .gpkg.tar) # filename.gpkg.tar -> filename
+ 	cd "$dir_name"
+	rm Manifest gpkg-1 metadata.tar.*
+ 	rm *.sig # cleaning
+	tar xf image.tar.* 
+	if [ ! -f "${dir_name}.delinfo" ]; then
+		touch "${dir_name}.delinfo"
+	fi
+	for file in $(find "image" -mindepth 2 -type f)
+	do
+		echo "$file" >> "${dir_name}.delinfo"
+	done # copies installed file pathes to delinfo file
+	sed -i 's|image|~/.installgpkg|g' "$dir_name.delinfo"
+	# sed -i 's/image//g' "$dir_name.delinfo" # for merge from ~/.installgpkg/usr to system /usr
+	mv "$dir_name.delinfo" ~/.installgpkg/delinfo
+	mv image/* . 
+	rm -r image
+	cp -r -p usr/* ~/.installgpkg/usr/ # can replace ~/.installgpkg/usr/ with /usr
+	if [ -d var ]; then
+		cp -r -p var/* ~/.installgpkg/var/
+	fi
+	if [ -d etc ]; then
+		cp -r -p etc/* ~/.installgpkg/etc/
+	fi
+	echo "install done!; cleaning"
+	rm -rf ~/.installgpkg/work/*
+	rm -rf "$dir_name"
+}
+
+delete_func () {
+	files_removal=$(cat "$filename")
+	for file in $files_removal; do
+		eval file="$file" # ~/filename -> /home/usr/filename
+		rm -rf "$file"
+		echo "Deleted: $file"
+	done
+}
+
+
+if [[ $1 = '--help' ]] || [[ $1 = '-h' ]] || [[ -z $1 ]]; then
+        echo "usage: installgpkg [options] [file ...]
+          -h  --help      print this usage and exit
+          -i  --install   install package
+          -d  --delete    delete package"
+
+elif [[ $1 = '--install' ]] || [[ $1 = '-i' ]]; then
+	if [[ -f $2 ]] && [[ -n $2 ]]; then
+		filename=$2
+		install_func
+	else
+		echo "requested .gpkg file does not exist!"
+		exit 1
+	fi
+elif [[ $1 = '--delete' ]] || [[ $1 = '-d' ]]; then
+	if [[ -f $2 ]] && [[ -n $2 ]]; then
+		filename=$2
+		delete_func
+		rm -f $filename
+		echo "done!"
+	else
+		echo "requested .delinfo file does not exist!"
+		exit 1
+	fi
+else
+	echo "bad input! check --help"
+	exit 1
+fi
+
