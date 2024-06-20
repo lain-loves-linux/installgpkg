@@ -3,12 +3,10 @@ if [ -d ~/.installgpkg ]; then
 	sleep 0.1
 else
 	echo "working directory not found!"
-	mkdir -p ~/.installgpkg/{bin,work,usr,delinfo}
-	echo 'export PATH="~/.installgpkg/bin:$PATH"' >> ~/.bashrc
-	echo 'export PATH="~/.installgpkg/usr/bin:$PATH"' >> ~/.bashrc
-	echo 'export PATH="~/.installgpkg/usr:$PATH"' >> ~/.bashrc
-	mv $0 ~/.installgpkg/bin
-	echo "created ~/.installgpkg & .bashrc modified; script moved to newly created PATH"
+	mkdir -p ~/.installgpkg/{work,usr,delinfo}
+	echo 'export PATH="~/.installgpkg:$PATH"' >> ~/.bashrc
+	mv $0 ~/.installgpkg
+	echo "~/.installgpkg created, added to path, script moved here"
 	source ~/.bashrc
 fi
 
@@ -33,12 +31,12 @@ install_func () {
 	mv "$dir_name.delinfo" ~/.installgpkg/delinfo
 	mv image/* . 
 	rm -r image
-	cp -r -p usr/* ~/.installgpkg/usr/ # can replace ~/.installgpkg/usr/ with /usr
+	cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
 	if [ -d var ]; then
-		cp -r -p var/* ~/.installgpkg/var/
+		cp -r -p var/* /var
 	fi
 	if [ -d etc ]; then
-		cp -r -p etc/* ~/.installgpkg/etc/
+		cp -r -p etc/* etc/
 	fi
 	echo "install done!; cleaning"
 	rm -rf ~/.installgpkg/work/*
