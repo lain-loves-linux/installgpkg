@@ -2,6 +2,7 @@
 if [ $(whoami) = "root" ]; then
 	echo "please run script as normal user, not root!"
 	exit 1
+fi
 
 if [ -d ~/.installgpkg ]; then
 	sleep 0.1
@@ -17,7 +18,6 @@ fi
 install_func () {
 	echo "running with sudo!"
 	sudo true # asks user for password
-	alias sudo='s'
 	cp $filename ~/.installgpkg/work # $filename = $2
 	cd ~/.installgpkg/work
 	tar xf $filename
@@ -38,12 +38,12 @@ install_func () {
 	mv "$dir_name.delinfo" ~/.installgpkg/delinfo
 	mv image/* . 
 	rm -r image
-	s cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
+	sudo cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
 	if [ -d var ]; then
-		s cp -r -p var/* /var
+		sudo cp -r -p var/* /var
 	fi
 	if [ -d etc ]; then
-		s cp -r -p etc/* etc/
+		sudo cp -r -p etc/* etc/
 	fi
 	echo "install done!; cleaning"
 	rm -rf ~/.installgpkg/work/*
@@ -53,11 +53,10 @@ install_func () {
 delete_func () {
 	echo "running with sudo!"
 	sudo true
-	alias sudo='s'
 	files_removal=$(cat "$filename")
 	for file in $files_removal; do
 		eval file="$file" # ~/filename -> /home/usr/filename
-		s rm -rf "$file"
+		sudo rm -rf "$file"
 		echo "Deleted: $file"
 	done
 }
