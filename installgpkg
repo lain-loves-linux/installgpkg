@@ -33,12 +33,11 @@ install_func () {
 	do
 		echo "$file" >> "${dir_name}.delinfo"
 	done # copies installed file pathes to delinfo file
-	# sed -i 's|image|~/.installgpkg|g' "$dir_name.delinfo"
-	sed -i 's/image//g' "$dir_name.delinfo" # for merge from ~/.installgpkg/usr to system /usr
+	sed -i 's/image//g' "$dir_name.delinfo"
 	mv "$dir_name.delinfo" ~/.installgpkg/delinfo
 	mv image/* . 
 	rm -r image
-	sudo cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
+	sudo cp -r -p usr/* /usr 
 	if [ -d var ]; then
 		sudo cp -r -p var/* /var
 	fi
