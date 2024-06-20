@@ -1,9 +1,13 @@
 #!/bin/bash
+if [ $(whoami) = "root" ]; then
+	echo "please run script as normal user, not root!"
+	exit 1
+
 if [ -d ~/.installgpkg ]; then
 	sleep 0.1
 else
 	echo "working directory not found!"
-	mkdir -p ~/.installgpkg/{work,usr,delinfo}
+	mkdir -p ~/.installgpkg/{work,delinfo}
 	echo 'export PATH="~/.installgpkg:$PATH"' >> ~/.bashrc
 	mv $0 ~/.installgpkg
 	echo "~/.installgpkg created, added to path, script moved here"
@@ -11,6 +15,9 @@ else
 fi
 
 install_func () {
+	echo "running with sudo!"
+	sudo true # asks user for password
+	alias sudo='s'
 	cp $filename ~/.installgpkg/work # $filename = $2
 	cd ~/.installgpkg/work
 	tar xf $filename
@@ -26,17 +33,17 @@ install_func () {
 	do
 		echo "$file" >> "${dir_name}.delinfo"
 	done # copies installed file pathes to delinfo file
-	sed -i 's|image|~/.installgpkg|g' "$dir_name.delinfo"
-	# sed -i 's/image//g' "$dir_name.delinfo" # for merge from ~/.installgpkg/usr to system /usr
+	# sed -i 's|image|~/.installgpkg|g' "$dir_name.delinfo"
+	sed -i 's/image//g' "$dir_name.delinfo" # for merge from ~/.installgpkg/usr to system /usr
 	mv "$dir_name.delinfo" ~/.installgpkg/delinfo
 	mv image/* . 
 	rm -r image
-	cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
+	s cp -r -p usr/* /usr # can replace ~/.installgpkg/usr/ with /usr
 	if [ -d var ]; then
-		cp -r -p var/* /var
+		s cp -r -p var/* /var
 	fi
 	if [ -d etc ]; then
-		cp -r -p etc/* etc/
+		s cp -r -p etc/* etc/
 	fi
 	echo "install done!; cleaning"
 	rm -rf ~/.installgpkg/work/*
@@ -44,10 +51,13 @@ install_func () {
 }
 
 delete_func () {
+	echo "running with sudo!"
+	sudo true
+	alias sudo='s'
 	files_removal=$(cat "$filename")
 	for file in $files_removal; do
 		eval file="$file" # ~/filename -> /home/usr/filename
-		rm -rf "$file"
+		s rm -rf "$file"
 		echo "Deleted: $file"
 	done
 }
