@@ -23,8 +23,8 @@ install_func () {
 	tar xf $filename
 	dir_name=$(basename "$filename" .gpkg.tar) # filename.gpkg.tar -> filename
  	cd "$dir_name"
-	rm Manifest gpkg-1 metadata.tar.*
- 	rm *.sig # cleaning
+	rm -f Manifest gpkg-1 metadata.tar.*
+ 	rm -f *.sig # cleaning
 	tar xf image.tar.* 
 	if [ ! -f "${dir_name}.delinfo" ]; then
 		touch "${dir_name}.delinfo"
