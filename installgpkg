@@ -42,7 +42,7 @@ install_func () {
 		sudo cp -r -p var/* /var
 	fi
 	if [ -d etc ]; then
-		sudo cp -r -p etc/* etc/
+		sudo cp -r -p etc/* /etc
 	fi
 	echo "install done!; cleaning"
 	rm -rf ~/.installgpkg/work/*
