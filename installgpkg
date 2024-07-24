@@ -66,7 +66,8 @@ if [[ $1 = '--help' ]] || [[ $1 = '-h' ]] || [[ -z $1 ]]; then
         echo "usage: installgpkg [options] [file ...]
           -h  --help      print this usage and exit
           -i  --install   install package
-          -d  --delete    delete package"
+          -d  --delete    delete package
+	  Files needed for package removal is located in ~/.installgpkg/delinfo directory."
 
 elif [[ $1 = '--install' ]] || [[ $1 = '-i' ]]; then
 	if [[ -f $2 ]] && [[ -n $2 ]]; then
