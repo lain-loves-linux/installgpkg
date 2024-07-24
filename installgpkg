@@ -11,8 +11,9 @@ else
 	mkdir -p ~/.installgpkg/{work,delinfo}
 	echo 'export PATH="~/.installgpkg:$PATH"' >> ~/.bashrc
 	mv $0 ~/.installgpkg
-	echo "~/.installgpkg created, added to path, script moved here"
+	echo "~/.installgpkg created, added to PATH, script moved here. Please restart script by passing 'installgpkg' though console."
 	source ~/.bashrc
+	exit 1 
 fi
 
 install_func () {
